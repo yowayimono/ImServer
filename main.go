@@ -1,18 +1,27 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
-	"github.com/spf13/viper"
-	"im/config"
 	"im/model"
 )
 
 func main() {
-	viper.SetConfigType("yaml")
-	viper.ReadConfig(bytes.NewBuffer(config.AppConfig))
-	mysql_conf := viper.Get("mysql")
 
-	model.ImDB.Row()
-	fmt.Println(mysql_conf)
+	model.InitDB()
+
+	db := model.GetMysqlDB()
+
+	// 获取当前数据库的名称
+	dbName := db.Migrator().CurrentDatabase()
+	fmt.Println("当前数据库名称:", dbName)
+
+	model.InitRedis()
+	user := &model.User{
+		UserName: "傻逼",
+		PassWord: "asadaf",
+	}
+
+	db.Create(&user)
+	//tables, err := db.DBMetas()
+
 }
